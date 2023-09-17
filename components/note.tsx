@@ -10,7 +10,7 @@ const yomogi = Yomogi({ weight: '400', subsets: ['latin'] })
 const mincho = Sawarabi_Mincho({ weight: '400', subsets: ['latin'] })
 
 export interface NoteProps extends Note {
-    instance: "barkle.chat"
+    instance: string
     ogs?: OgObject[]
     isRenote?: boolean
 }
