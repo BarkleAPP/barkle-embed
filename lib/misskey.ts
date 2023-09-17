@@ -1,7 +1,7 @@
 import { api } from 'misskey-js'
 
 const cli = (host: string) => new api.APIClient({
-    origin: `https://${host}`
+    origin: `https://barkle.chat`
 })
 
 export default cli

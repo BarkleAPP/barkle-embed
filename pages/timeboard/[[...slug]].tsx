@@ -27,10 +27,10 @@ export const getStaticPaths: GetStaticPaths = () => ({
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
     if (params) {
-        const [instance, userId] = params.slug as string[]
-        const notes = await cli(instance).request('users/notes', { userId })
+        const [userId] = params.slug as string[]
+        const notes = await cli("barkle.chat").request('users/notes', { userId })
         const ogs = await Promise.all(notes.map(async note => getOgs(note.text)))
-        return { props: { notes, instance, userId, ogs }, revalidate: 10 }
+        return { props: { notes, userId, ogs }, revalidate: 10 }
     }
     return { notFound: true }
 }

@@ -18,14 +18,14 @@ export default function EmbeddableNote(note: NoteProps) {
 
 export const getStaticPaths: GetStaticPaths = () => ({
     fallback: true,
-    paths: [{ params: { slug: ['misskey.cloud', '9grjhkquhi'] } }]
+    paths: [{ params: { slug: ['barkle.chat', '9jr63mej1p'] } }]
 })
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
     if (params) {
-        const [instance, noteId] = params.slug as string[]
-        const note = await cli(instance).request('notes/show', { noteId })
-        return { props: { ...note, instance, ogs: await getOgs(note.text) }, revalidate: 10 }
+        const [noteId] = params.slug as string[]
+        const note = await cli("barkle.chat").request('notes/show', { noteId })
+        return { props: { ...note, ogs: await getOgs(note.text) }, revalidate: 10 }
     }
     return { notFound: true }
 }
