@@ -22,7 +22,7 @@ export default function EmbeddableTimeline({ notes, instance, userId, ogs }: {
 
 export const getStaticPaths: GetStaticPaths = () => ({
     fallback: 'blocking',
-    paths: [{ params: { slug: ['9358xkvosa'] } }],
+    paths: [{ params: { slug: ['9jnioy0lkk'] } }],
 })
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
