@@ -31,7 +31,7 @@ export default function Home() {
 
       <h1 className='text-5xl text-center'>
         <div className='my-2 relative h-20'>
-          <Image priority={true} className='absolute animate-fade left-1/2 -translate-x-1/2' src={'https://barkle.chat/static-assets/dog.png'} quality={100} width={80} height={80} alt='Barkle Logo'></Image>
+          <Image priority={true} className='absolute animate-fade left-1/2 -translate-x-1/2' src={'https://baog.pngrkle.chat/static-assets/d'} quality={100} width={80} height={80} alt='Barkle Logo'></Image>
         </div>
         <div className='bg-clip-text font-extrabold text-transparent bg-gradient-to-r from-indigo-300 to-purple-400' style={barkleTextColor}>Barkle</div>
       </h1>

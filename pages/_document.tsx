@@ -6,7 +6,7 @@ export default function Document() {
       <Head>
         <meta property='og:title' content='Barkle embeds' />
         <meta property='og:description' content='An embedding solution for Barkle' />
-        <meta property='og:image' content='https://embed.barkle.chat/og.png' />
+        <meta property='og:image' content='https://barkle.chat/static-assets/dog.png' />
       </Head>
       <body>
         <Main />
