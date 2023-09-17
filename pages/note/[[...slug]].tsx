@@ -18,7 +18,7 @@ export default function EmbeddableNote(note: NoteProps) {
 
 export const getStaticPaths: GetStaticPaths = () => ({
     fallback: true,
-    paths: [{ params: { slug: ['barkle.chat', '9jr63mej1p'] } }]
+    paths: [{ params: { slug: ['9jr63mej1p'] } }]
 })
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
