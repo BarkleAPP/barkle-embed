@@ -57,7 +57,7 @@ export default function Note({ id, user, createdAt, text, files, cw, poll, renot
 }
 
 const Renote = ({ renote }: { renote?: Note }) => renote ? (<>
-    <Note {...renote} ogs={[]} instance='' isRenote></Note>
+    <Note {...renote} ogs={[]} isRenote></Note>
     <br></br>
 </>) : <></>
 
