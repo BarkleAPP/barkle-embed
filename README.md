@@ -27,7 +27,7 @@ The following note components are supported:
 
 ## Usage
 
-### Use `missbed.narix.link`
+### Use `embed.barkle.chat`
 
 Embed a note or a timeline of a user using `<iframe>`。
 

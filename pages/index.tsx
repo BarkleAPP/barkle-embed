@@ -10,32 +10,44 @@ const ReactEmbedGist = dynamic(() => import('react-embed-gist'), {
 const mincho = Sawarabi_Mincho({ weight: '400', subsets: ['latin'] })
 
 export default function Home() {
+  const customStyle = {
+    backgroundColor: '#1f1d28', // Set the background color to #1f1d28
+    color: '#e84d83', // Default text color
+  };
+
+  const barkleTextColor = {
+    color: '#e84d83', // Text color for "Barkle"
+  };
+
+  const embeddingTextColor = {
+    color: 'white', // Text color for "Embedding solution for Barkle"
+  };
+
   return (
-    <main className={`${mincho.className} bg-gradient-to-tr from-indigo-200 via-red-200 to-yellow-100 overflow-y-auto p-8`}>
+    <main style={customStyle} className={`${mincho.className} overflow-y-auto p-8`}>
       <Head>
-        <meta name='description' content={'Embedding solution for Misskey. Homepage of Missbed.'} />
+        <meta name='description' content={'Embedding solution for Barkle.'} />
       </Head>
-      <GithubCorner href='https://github.com/NarixHine/missbed' bannerColor='pink' target='_blank' style={{ opacity: 0.7 }} />
 
       <h1 className='text-5xl text-center'>
         <div className='my-2 relative h-20'>
-          <Image priority={true} className='absolute animate-fade left-1/2 -translate-x-1/2' src={'/og.png'} quality={100} width={80} height={80} alt='Missbed Logo'></Image>
+          <Image priority={true} className='absolute animate-fade left-1/2 -translate-x-1/2' src={'https://barkle.chat/static-assets/dog.png'} quality={100} width={80} height={80} alt='Barkle Logo'></Image>
         </div>
-        <div className='bg-clip-text font-extrabold text-transparent bg-gradient-to-r from-indigo-300 to-purple-400'>Missbed</div>
+        <div className='bg-clip-text font-extrabold text-transparent bg-gradient-to-r from-indigo-300 to-purple-400' style={barkleTextColor}>Barkle</div>
       </h1>
-      <p className='text-center text-slate-500 italic'>Embedding solution for <a className='text-lime-600'>Misskey</a></p>
+      <p className='text-center text-#e84d83 italic' style={embeddingTextColor}>Embedding solution for Barkle</p>
       <br></br>
 
-      <div className='w-2/3 bg-slate-200/60 mx-auto rounded-lg opacity-90 p-5 overflow-x-hidden' style={{ minWidth: 280 }}>
-        <ReactEmbedGist titleClass='hidden' loadingClass='hidden' gist='NarixHine/6451fe18c4924fa55c3102abd8083cdc'></ReactEmbedGist>
+      <div className='w-2/3 mx-auto rounded-lg opacity-90 p-5 overflow-x-hidden' style={{ minWidth: 280 }}>
+        <ReactEmbedGist titleClass='hidden' loadingClass='hidden' gist='AidanTheBandit/390ed225bc649bf1b1cf8c211a73c160'></ReactEmbedGist>
         <hr className='my-5 border-purple-400'></hr>
-        <iframe src='/note/misskey.cloud/9grjhkquhi' width={'100%'} height={360}></iframe>
+        <iframe src='/note/barkle.chat/9358xkvosa' width={'100%'} height={260}></iframe>
         <br></br>
-        <iframe src='/timeline/misskey.cloud/9cxdmiu7h5' width={'100%'} height={1000}></iframe>
+        <iframe src='/timeboard/barkle.chat/9jnioy0lkk' width={'100%'} height={1000}/>
+        <br></br>
+        <iframe src='/timeline/barkle.chat/9jnioy0lkk' width={'100%'} height={1000}></iframe>
       </div>
       <br></br>
-
-      <footer className='text-center text-slate-700 align-middle'>— Made by <a target='_blank' rel='noreferrer' href='https://github.com/NarixHine' className='italic'>Narix Hine <Image src='/nh.png' className='align-middle mx-1' quality={100} width={22} height={25} alt='Narix Hine'></Image></a> —</footer>
     </main>
   )
 }

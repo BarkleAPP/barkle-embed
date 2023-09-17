@@ -7,7 +7,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>Missbed</title>
+        <title>Barkle Embeds</title>
       </Head>
       <Component {...pageProps} />
       <Analytics></Analytics>
