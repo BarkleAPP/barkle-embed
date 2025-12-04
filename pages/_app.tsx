@@ -10,7 +10,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <title>Barkle Embeds</title>
       </Head>
       <Component {...pageProps} />
-      <Analytics></Analytics>
+      {process.env.NEXT_PUBLIC_VERCEL_ANALYTICS_ID ? <Analytics /> : null}
     </>
   )
 }

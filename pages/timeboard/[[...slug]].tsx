@@ -40,7 +40,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
             notes = []
             ogs = []
         }
-        return { props: { notes, userId, ogs }, revalidate: 10 }
+        return { props: { notes, userId, ogs, instance: 'barkle.chat' }, revalidate: 10 }
     }
     return { notFound: true }
 }
