@@ -1,13 +1,9 @@
 import { DriveFile, Note } from 'misskey-js/built/entities'
-import { Yomogi, Sawarabi_Mincho } from 'next/font/google'
 import { useEffect, useState } from 'react'
 import ProgressiveImage from 'react-progressive-image-loading'
 import Image from 'next/image'
 import { ImageObject, OgObject } from 'open-graph-scraper/dist/lib/types'
 import MfmConverter from '@/lib/mfm'
-
-const yomogi = Yomogi({ weight: '400', subsets: ['latin'] })
-const mincho = Sawarabi_Mincho({ weight: '400', subsets: ['latin'] })
 
 export interface NoteProps extends Note {
     instance: string
@@ -18,47 +14,103 @@ export interface NoteProps extends Note {
 export default function Note({ id, user, createdAt, text, files, cw, poll, renote, instance = 'barkle.chat', ogs = [], isRenote }: NoteProps) {
     const [show, setShow] = useState(!cw)
     const converter = new MfmConverter(instance)
+    
+    const timeAgo = (dateString: string) => {
+        const date = new Date(dateString);
+        const now = new Date();
+        const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+        let interval = seconds / 31536000;
+        if (interval > 1) return Math.floor(interval) + " year(s) ago";
+        interval = seconds / 2592000;
+        if (interval > 1) return Math.floor(interval) + " month(s) ago";
+        interval = seconds / 86400;
+        if (interval > 1) return Math.floor(interval) + " day(s) ago";
+        interval = seconds / 3600;
+        if (interval > 1) return Math.floor(interval) + " hour(s) ago";
+        interval = seconds / 60;
+        if (interval > 1) return Math.floor(interval) + " minute(s) ago";
+        return Math.floor(seconds) + " second(s) ago";
+    }
+
     return (
-        <article className={'bg-stone-50 w-full p-7 rounded'} style={{ boxShadow: isRenote ? 'rgba(50, 50, 93, 0.25) 0px 10px 20px -4px, rgba(0, 0, 0, 0.3) 0px 6px 10px -5px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset' : '' }}>
-            <header className='flex gap-3'>
-                <Image width={56} height={56} src={user.avatarUrl} alt='Avatar' className='rounded-full'></Image>
-                <div className={`${yomogi.className} flex flex-col justify-center leading-tight`}>
-                    <p className='text-stone-900 font-bold'>{converter.convert(user.name)}</p>
-                    <p className='text-stone-900'>{`@${user.username}`}</p>
+        <article className={`w-full p-6 rounded-xl bg-[#1f1f1f] text-[#dadada] font-sans`} style={{ boxShadow: isRenote ? 'none' : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}>
+            {/* Header */}
+            <header className='flex items-start mb-2'>
+                <Image width={48} height={48} src={user.avatarUrl} alt='Avatar' className='rounded-lg mr-3'></Image>
+                <div className='flex flex-col leading-tight'>
+                    <div className='flex items-baseline gap-2'>
+                         <p className='font-bold text-white text-base'>{converter.convert(user.name)}</p>
+                    </div>
+                    <p className='text-[#8b8b8b] text-sm'>{`@${user.username}`}</p>
+                </div>
+                <div className='ml-auto text-[#8b8b8b] text-xs'>
+                    {timeAgo(createdAt)}
                 </div>
             </header>
-            <br></br>
 
-            {
-                cw ? (<div className={mincho.className}>
-                    {converter.convert(cw)} <button className='text-slate-400 ml-1 border-solid border-2 px-1' onClick={() => setShow(show => !show)}>{show ? 'Hide' : 'Show'}</button>
-                    <br></br><br></br>
-                </div>) : <></>
-            }
-            {
-                show ?
-                    (<>
-                        <Text text={text} ogs={ogs} converter={converter}></Text>
-                        <Renote renote={renote}></Renote>
-                        <Cards ogs={ogs}></Cards>
-                        <Enquette poll={poll}></Enquette>
-                        <Images imgs={files.filter(({ type }) => type.startsWith('image'))}></Images>
-                    </>) : <></>
-            }
-
-            <footer className={`${yomogi.className} text-stone-500 text-sm`}>
+            {/* Content */}
+            <div className='mb-3'>
                 {
-                    isRenote ? 'Noted' : <a className='underline' href={`https://${instance}/barks/${id}`} target='_blank' rel='noreferrer'>Barked</a>
+                    cw ? (<div>
+                        <span className='italic text-gray-400'>{converter.convert(cw)}</span> 
+                        <button className='text-blue-400 ml-2 text-sm hover:underline' onClick={() => setShow(show => !show)}>{show ? 'Hide' : 'Show'}</button>
+                    </div>) : <></>
                 }
-                {' '} at {createdAt.replace('T', ' ').split('.')[0]}
+                {
+                    show && text ? (
+                        <div className='whitespace-pre-line text-[15px] leading-relaxed text-[#dadada]'>
+                            {converter.convert(text)}
+                        </div>
+                    ) : <></>
+                }
+            </div>
+
+            {/* Media */}
+            {show && (
+                <>
+                    <Images imgs={files.filter(({ type }) => type.startsWith('image'))}></Images>
+                    <Renote renote={renote}></Renote>
+                    <Cards ogs={ogs}></Cards>
+                    <Enquette poll={poll}></Enquette>
+                </>
+            )}
+
+            {/* Footer Info */}
+            <div className='mt-2 mb-3 text-xs font-bold text-[#666]'>
+                Barkle for iOS
+            </div>
+
+            {/* Reactions */}
+             <div className='flex gap-2 mb-3'>
+                <div className='flex items-center bg-[#f06292] text-white px-2 py-1 rounded text-sm font-bold'>
+                    <i className="ph-star-bold mr-1"></i> 1
+                </div>
+            </div>
+
+            {/* Action Buttons */}
+            <footer className='flex items-center justify-between text-[#8b8b8b] mt-2 border-t border-[#333] pt-3'>
+                <button className='hover:text-white transition-colors flex items-center gap-1'>
+                    <i className="ph-arrow-bend-up-left-bold text-xl"></i>
+                </button>
+                <button className='hover:text-white transition-colors flex items-center gap-1'>
+                    <i className="ph-repeat-bold text-xl"></i>
+                    <span className='text-sm'>1</span>
+                </button>
+                <button className='hover:text-white transition-colors flex items-center gap-1'>
+                    <i className="ph-minus-bold text-xl text-[#f06292]"></i>
+                </button>
+                 <button className='hover:text-white transition-colors flex items-center gap-1'>
+                    <i className="ph-dots-three-outline-bold text-xl"></i>
+                </button>
             </footer>
         </article>
     )
 }
 
 const Renote = ({ renote }: { renote?: Note }) => renote ? (<>
-    <Note {...renote} ogs={[]} instance='barkle.chat' isRenote></Note>
-    <br></br>
+    <div className="border border-[#333] rounded-lg p-4 mt-2">
+        <Note {...renote} ogs={[]} instance='barkle.chat' isRenote></Note>
+    </div>
 </>) : <></>
 
 const Cards = ({ ogs }: { ogs: OgObject[] }) => {
@@ -66,36 +118,22 @@ const Cards = ({ ogs }: { ogs: OgObject[] }) => {
         {
             ogs.map(({ ogImage, ogTitle, requestUrl, ogDescription }) => (
                 (
-                    <a key={requestUrl} href={requestUrl} target='_blank' rel='noreferrer'>
-                        <div className='flex h-20 my-2 bg-gradient-to-r from-rose-100/20 to-teal-100/20'>
-                            <div className='relative w-20 h-20 shrink-0 rounded-l overflow-clip'>
-                                <Image quality={100} src={(ogImage as ImageObject[])[0].url} className='object-cover' width={80} height={80} alt={ogTitle as string}></Image>
+                    <a key={requestUrl} href={requestUrl} target='_blank' rel='noreferrer' className="block mt-2">
+                        <div className='flex h-24 bg-[#2a2a2a] rounded-lg overflow-hidden hover:bg-[#333] transition-colors'>
+                            <div className='relative w-24 h-24 shrink-0'>
+                                <Image quality={100} src={(ogImage as ImageObject[])[0].url} className='object-cover' fill alt={ogTitle as string}></Image>
                             </div>
-                            <div className={`${mincho.className} w-full p-4 border-slate-300 border border-l-0 rounded-r overflow-y-clip whitespace-nowrap text-ellipsis overflow-x-hidden`}>
-                                {ogTitle}
-                                <br></br>
-                                <span className='text-slate-500 text-sm'>
+                            <div className='flex-1 p-3 overflow-hidden'>
+                                <div className='font-bold text-sm text-[#dadada] truncate'>{ogTitle}</div>
+                                <div className='text-xs text-[#8b8b8b] mt-1 line-clamp-2'>
                                     {ogDescription ?? ''}
-                                </span>
+                                </div>
                             </div>
                         </div>
                     </a>
                 )))
         }
-        <br />
     </>) : <></>
-}
-
-const Text = ({ text, ogs, converter }: { text: string | null, ogs: OgObject[], converter: MfmConverter }) => {
-    if (text) {
-        return (<>
-            <div className={`${mincho.className} break-words whitespace-pre-line`}>{converter.convert(text)}</div>
-            <br className={ogs.length > 0 ? 'hidden' : ''}></br>
-        </>)
-    }
-    else {
-        return <></>
-    }
 }
 
 const Images = ({ imgs }: { imgs: DriveFile[] }) => {
@@ -104,16 +142,18 @@ const Images = ({ imgs }: { imgs: DriveFile[] }) => {
     const [opacities, setOpacities] = useState<number[]>(imgs.map(({ isSensitive }) => (isSensitive ? 0.1 : 1)))
 
     return imgs.length > 0 ? (<>
-        <div className={`grid ${imgs.length === 1 ? 'grid-cols-1' : 'grid-cols-2'} gap-2 p-2 bg-gradient-to-r from-rose-100/20 to-teal-100/20`} style={{ boxShadow: 'rgba(3, 102, 214, 0.2) 0px 0px 0px 3px' }}>
+        <div className={`grid ${imgs.length === 1 ? 'grid-cols-1' : 'grid-cols-2'} gap-2 mt-2`}>
             {
                 isMounted ? imgs.map(({ id, thumbnailUrl, url, name }, index) => (
                     <ProgressiveImage key={id} preview={thumbnailUrl} src={url} render={(src, style) => (
-                        <div className='overflow-clip aspect-video rounded relative'>
+                        <div className='overflow-hidden aspect-video rounded-lg relative bg-[#2a2a2a]'>
                             <Image fill src={src} alt={name} style={{ ...style, objectFit: 'cover', opacity: opacities[index], filter: `blur(${Math.floor((1 - opacities[index]) * 5)}px)` }} />
-                            <div style={{ opacity: 1 - opacities[index] }} className={`${mincho.className} ${1 - opacities[index] > 0 ? '' : 'hidden'} w-full p-1 text-center absolute top-1/2 -translate-y-1/2`}>
-                                <a className='text-lg'>NSFW</a>
-                                <br></br>
-                                <button className='text-slate-400 border-solid border-slate-400 border px-1 text-xs' onClick={() => {
+                            <div className='absolute top-2 right-2 bg-[#333] p-1 rounded text-white opacity-70 hover:opacity-100 cursor-pointer'>
+                                <i className="ph-eye-slash"></i>
+                            </div>
+                             <div style={{ opacity: 1 - opacities[index] }} className={`${1 - opacities[index] > 0 ? '' : 'hidden'} w-full h-full flex flex-col items-center justify-center absolute top-0 left-0 bg-black/50`}>
+                                <span className='text-lg font-bold text-white mb-2'>NSFW</span>
+                                <button className='text-white border border-white px-3 py-1 rounded text-sm hover:bg-white hover:text-black transition-colors' onClick={() => {
                                     const fadeInInterval = setInterval(() => {
                                         setOpacities(opacities => Array.from(opacities, (opacity, i) => {
                                             const newOpacity = i === index ? opacity + 0.01 : opacity
@@ -130,7 +170,6 @@ const Images = ({ imgs }: { imgs: DriveFile[] }) => {
                 )) : <></>
             }
         </div>
-        <br></br>
     </>) : <></>
 }
 
@@ -147,18 +186,21 @@ const Enquette = ({ poll }: {
 }) => {
     const allVotes = poll ? poll.choices.reduce((a, b) => a + b.votes, 0) : 0
     return poll ? (<>
+        <div className="mt-2">
         {
             poll.choices.map(({ text, votes }) => (
                 <div
                     key={text}
-                    className={`${mincho.className} w-full border-lime-200 border-2 my-1 whitespace-nowrap rounded`}
+                    className='w-full border border-[#333] my-1 rounded overflow-hidden relative bg-[#2a2a2a]'
                 >
-                    <div style={{ width: `${votes / allVotes * 100}%` }} className='p-2 bg-lime-100 text-teal-800 text-sm rounded'>
-                        {text} <a className='text-xs border-l px-1 border-teal-600 text-teal-600'>{votes} {votes === 1 ? 'Vote' : 'Votes'}</a>
+                    <div style={{ width: `${votes / allVotes * 100}%` }} className='absolute top-0 left-0 h-full bg-[#333] opacity-50'></div>
+                    <div className='relative p-2 flex justify-between items-center text-sm text-[#dadada]'>
+                        <span>{text}</span>
+                        <span className='text-xs text-[#8b8b8b]'>{votes} {votes === 1 ? 'Vote' : 'Votes'}</span>
                     </div>
                 </div>
             ))
         }
-        <br></br>
+        </div>
     </>) : <></>
 }

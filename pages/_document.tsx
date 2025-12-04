@@ -7,6 +7,7 @@ export default function Document() {
         <meta property='og:title' content='Barkle embeds' />
         <meta property='og:description' content='An embedding solution for Barkle' />
         <meta property='og:image' content='https://barkle.chat/static-assets/dog.png' />
+        <script src="https://unpkg.com/@phosphor-icons/web" async></script>
       </Head>
       <body>
         <Main />
