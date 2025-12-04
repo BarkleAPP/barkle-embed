@@ -1,45 +1,50 @@
 import Timeline from '@/components/timeline'
-import barkleApi from '@/lib/barkle'
-import getOgs from '@/lib/og'
+import Skeleton from '@/components/skeleton'
 import { Note } from 'misskey-js/built/entities'
-import { GetStaticPaths, GetStaticProps } from 'next'
 import Head from 'next/head'
-import { OgObject } from 'open-graph-scraper/dist/lib/types'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 
-export default function EmbeddableTimeboard({ notes, instance, userId, ogs }: {
-    notes: Note[],
-    instance: string,
-    userId: string,
-    ogs: OgObject[][]
-}) {
+export default function EmbeddableTimeboard() {
+    const router = useRouter()
+    const [notes, setNotes] = useState<Note[] | null>(null)
+    const [error, setError] = useState<string | null>(null)
+
+    const userId = router.query.slug?.[0]
+
+    useEffect(() => {
+        if (!userId) return
+
+        fetch('https://barkle.chat/api/users/notes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId })
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`API error: ${res.status}`)
+                return res.json()
+            })
+            .then(data => {
+                setNotes(data)
+            })
+            .catch(err => {
+                console.error('Failed to fetch timeboard:', err)
+                setError(err.message)
+            })
+    }, [userId])
+
+    if (error) {
+        return <div className="p-4 text-red-500">Failed to load timeboard: {error}</div>
+    }
+
+    if (!notes || !userId) {
+        return <Skeleton />
+    }
+
     return (<>
         <Head>
             <meta name='description' content={`UID: ${userId}. Username: ${notes[0]?.user?.name ?? 'unknown'}`} />
         </Head>
-        <Timeline notes={notes} instance={instance} userId={userId} ogs={ogs} boardly></Timeline>
+        <Timeline notes={notes} instance={'barkle.chat'} userId={userId as string} ogs={notes.map(() => [])} boardly></Timeline>
     </>)
-}
-
-export const getStaticPaths: GetStaticPaths = () => ({
-    fallback: 'blocking',
-    paths: [],
-})
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-    if (params) {
-        const [userId] = params.slug as string[]
-        let notes: Note[] = []
-        let ogs: OgObject[][] = []
-        try {
-            notes = (await barkleApi('barkle.chat').request('users/notes', { userId })) as Note[]
-            ogs = await Promise.all(notes.map(async note => getOgs(note.text)))
-        } catch (err) {
-            console.error('Barkle API request failed:', err)
-            // fallback to empty notes so build can complete in environments where Barkle API is blocked
-            notes = []
-            ogs = []
-        }
-        return { props: { notes, userId, ogs, instance: 'barkle.chat' }, revalidate: 10 }
-    }
-    return { notFound: true }
 }
