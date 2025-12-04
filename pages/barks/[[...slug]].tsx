@@ -1,37 +1,49 @@
 import Note, { NoteProps } from '@/components/note'
 import Skeleton from '@/components/skeleton'
-import barkleApi from '@/lib/barkle'
-import getOgs from '@/lib/og'
-import { GetStaticPaths, GetStaticProps } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
 
-export default function EmbeddableBark(note: NoteProps) {
-    const { isFallback } = useRouter()
-    return isFallback ? <Skeleton></Skeleton> : (<>
+export default function EmbeddableBark() {
+    const router = useRouter()
+    const [note, setNote] = useState<NoteProps | null>(null)
+    const [error, setError] = useState<string | null>(null)
+
+    const noteId = router.query.slug?.[0]
+
+    useEffect(() => {
+        if (!noteId) return
+
+        fetch('https://barkle.chat/api/notes/show', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ noteId })
+        })
+            .then(res => {
+                if (!res.ok) throw new Error(`API error: ${res.status}`)
+                return res.json()
+            })
+            .then(data => {
+                setNote({ ...data, instance: 'barkle.chat', ogs: [] })
+            })
+            .catch(err => {
+                console.error('Failed to fetch bark:', err)
+                setError(err.message)
+            })
+    }, [noteId])
+
+    if (error) {
+        return <div className="p-4 text-red-500">Failed to load bark: {error}</div>
+    }
+
+    if (!note) {
+        return <Skeleton />
+    }
+
+    return (<>
         <Head>
             <meta name='description' content={`Bark: ${note.text ?? note.id}.`} />
         </Head>
         <Note {...note}></Note>
     </>)
-}
-
-export const getStaticPaths: GetStaticPaths = () => ({
-    fallback: 'blocking',
-    paths: []
-})
-
-export const getStaticProps: GetStaticProps = async ({ params }) => {
-    if (params) {
-        const [noteId] = params.slug as string[]
-        try {
-            const note = (await barkleApi('barkle.chat').request('notes/show', { noteId }))
-            return { props: { ...note, instance: 'barkle.chat', ogs: await getOgs(note.text) }, revalidate: 10 }
-        } catch (err) {
-            console.error('Failed to fetch Barkle note for embed:', err)
-            // Return notFound so Next.js returns 404 - the API may be blocked by Cloudflare
-            return { notFound: true }
-        }
-    }
-    return { notFound: true }
 }
