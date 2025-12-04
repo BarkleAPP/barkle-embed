@@ -11,6 +11,7 @@ export interface NoteProps extends Note {
     ogs?: OgObject[]
     isRenote?: boolean
     barkleFor?: string
+    className?: string
 }
 
 // Helper interface to handle potential missing properties in UserLite
@@ -25,7 +26,7 @@ interface ExtendedUserLite {
     avatarDecorations?: any[];
 }
 
-export default function Note({ id, user, createdAt, text, files, cw, poll, renote, instance = 'barkle.chat', ogs = [], isRenote, barkleFor, reactions, myReaction }: NoteProps) {
+export default function Note({ id, user, createdAt, text, files, cw, poll, renote, instance = 'barkle.chat', ogs = [], isRenote, barkleFor, reactions, myReaction, className = '' }: NoteProps) {
     const [show, setShow] = useState(!cw)
     const converter = new MfmConverter(instance)
     
@@ -50,7 +51,7 @@ export default function Note({ id, user, createdAt, text, files, cw, poll, renot
     }
 
     return (
-        <article className={`w-full p-5 rounded-2xl bg-[#191919] text-[#dadada] font-sans`} style={{ boxShadow: isRenote ? 'none' : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}>
+        <article className={`w-full p-5 rounded-2xl bg-[#191919] text-[#dadada] font-sans ${className}`} style={{ boxShadow: isRenote ? 'none' : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}>
             {/* Header */}
             <header className='flex items-center mb-3'>
                 <div className='mr-3'>

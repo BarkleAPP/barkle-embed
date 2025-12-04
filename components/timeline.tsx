@@ -95,14 +95,21 @@ export default function Timeline({ notes, userId, instance, boardly = false, ogs
     }, [loadNotes]);
 
     return (
-        <div className={boardly ? 'grid items-center grid-cols-3 gap-5' : ''}>
-            {
-                loadedNotes.map((note, index) => (
-                    <div key={note.id} className="mb-4 animate-fade-in-up">
-                        <Note {...note} instance={instance} ogs={loadedOgs[index]}></Note>
-                    </div>
-                ))
-            }
+        <>
+            <div className={boardly ? 'grid items-start grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4' : ''}>
+                {
+                    loadedNotes.map((note, index) => (
+                        <div key={note.id} className="mb-4 animate-fade-in-up">
+                            <Note 
+                                {...note} 
+                                instance={instance} 
+                                ogs={loadedOgs[index]} 
+                                className={boardly ? 'bg-[#212121] border border-[#333]' : ''}
+                            />
+                        </div>
+                    ))
+                }
+            </div>
             
             <div ref={observerTarget} className="w-full py-8 flex justify-center items-center">
                 {isLoading && (
@@ -117,6 +124,6 @@ export default function Timeline({ notes, userId, instance, boardly = false, ogs
                     </div>
                 )}
             </div>
-        </div>
+        </>
     )
 }
