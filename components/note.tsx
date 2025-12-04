@@ -4,6 +4,7 @@ import ProgressiveImage from 'react-progressive-image-loading'
 import Image from 'next/image'
 import { ImageObject, OgObject } from 'open-graph-scraper/dist/lib/types'
 import MfmConverter from '@/lib/mfm'
+import Avatar from './avatar'
 
 export interface NoteProps extends Note {
     instance: string
@@ -12,10 +13,25 @@ export interface NoteProps extends Note {
     barkleFor?: string
 }
 
+// Helper interface to handle potential missing properties in UserLite
+interface ExtendedUserLite {
+    name: string | null;
+    username: string;
+    avatarUrl: string | null;
+    isBot?: boolean;
+    isCat?: boolean;
+    isLive?: boolean;
+    onlineStatus?: 'online' | 'active' | 'offline' | 'unknown';
+    avatarDecorations?: any[];
+}
+
 export default function Note({ id, user, createdAt, text, files, cw, poll, renote, instance = 'barkle.chat', ogs = [], isRenote, barkleFor, reactions, myReaction }: NoteProps) {
     const [show, setShow] = useState(!cw)
     const converter = new MfmConverter(instance)
     
+    // Cast user to ExtendedUserLite to access isBot safely
+    const extendedUser = user as unknown as ExtendedUserLite;
+
     const timeAgo = (dateString: string) => {
         const date = new Date(dateString);
         const now = new Date();
@@ -37,13 +53,13 @@ export default function Note({ id, user, createdAt, text, files, cw, poll, renot
         <article className={`w-full p-5 rounded-2xl bg-[#191919] text-[#dadada] font-sans`} style={{ boxShadow: isRenote ? 'none' : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}>
             {/* Header */}
             <header className='flex items-center mb-3'>
-                <div className='relative w-12 h-12 mr-3'>
-                    <Image fill src={user.avatarUrl} alt='Avatar' className='rounded-full object-cover'></Image>
+                <div className='mr-3'>
+                    <Avatar user={extendedUser as any} size={48} />
                 </div>
                 <div className='flex flex-col leading-tight min-w-0'>
                     <div className='flex items-center gap-1 overflow-hidden'>
                          <span className='font-bold text-[#dadada] text-[15px] truncate'>{converter.convert(user.name || user.username)}</span>
-                         {user.isBot && <span className="bg-[#212121] text-[#8b8b8b] text-[10px] px-1 rounded border border-[#333]">BOT</span>}
+                         {extendedUser.isBot && <span className="bg-[#212121] text-[#8b8b8b] text-[10px] px-1 rounded border border-[#333]">BOT</span>}
                     </div>
                     <div className='flex items-center text-[#8b8b8b] text-[13px] gap-1'>
                         <span className='truncate'>@{user.username}</span>
