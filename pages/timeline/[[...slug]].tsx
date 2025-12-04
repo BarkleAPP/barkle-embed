@@ -1,5 +1,4 @@
 import Timeline from '@/components/timeline'
-import cli from '@/lib/misskey'
 import barkleApi from '@/lib/barkle'
 import getOgs from '@/lib/og'
 import { Note } from 'misskey-js/built/entities'
@@ -23,7 +22,7 @@ export default function EmbeddableTimeline({ notes, instance, userId, ogs }: {
 
 export const getStaticPaths: GetStaticPaths = () => ({
     fallback: 'blocking',
-    paths: [{ params: { slug: ['9jnioy0lkk'] } }],
+    paths: [],
 })
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {

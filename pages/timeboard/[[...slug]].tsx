@@ -1,5 +1,4 @@
 import Timeline from '@/components/timeline'
-import cli from '@/lib/misskey'
 import barkleApi from '@/lib/barkle'
 import getOgs from '@/lib/og'
 import { Note } from 'misskey-js/built/entities'

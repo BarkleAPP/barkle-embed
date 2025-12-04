@@ -17,8 +17,8 @@ export default function EmbeddableBark(note: NoteProps) {
 }
 
 export const getStaticPaths: GetStaticPaths = () => ({
-    fallback: true,
-    paths: [{ params: { slug: ['9358xkvosa'] } }]
+    fallback: 'blocking',
+    paths: []
 })
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
