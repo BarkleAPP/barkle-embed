@@ -41,7 +41,7 @@ export default function Home() {
       <div className='w-2/3 mx-auto rounded-lg opacity-90 p-5 overflow-x-hidden' style={{ minWidth: 280 }}>
         <ReactEmbedGist titleClass='hidden' loadingClass='hidden' gist='AidanTheBandit/390ed225bc649bf1b1cf8c211a73c160'></ReactEmbedGist>
         <hr className='my-5 border-purple-400'></hr>
-        <iframe src='/note/9358xkvosa' width={'100%'} height={260}></iframe>
+        <iframe src='/barks/9358xkvosa' width={'100%'} height={260}></iframe>
         <br></br>
         <iframe src='/timeboard/9jnioy0lkk' width={'100%'} height={1000}/>
         <br></br>

@@ -15,7 +15,7 @@ export interface NoteProps extends Note {
     isRenote?: boolean
 }
 
-export default function Note({ id, user, createdAt, text, files, cw, poll, renote, instance, ogs = [], isRenote }: NoteProps) {
+export default function Note({ id, user, createdAt, text, files, cw, poll, renote, instance = 'barkle.chat', ogs = [], isRenote }: NoteProps) {
     const [show, setShow] = useState(!cw)
     const converter = new MfmConverter(instance)
     return (
