@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "update-api-spec": "bash ./scripts/fetch-barkle-api.sh",
+    "generate-api-types": "npx openapi-typescript ./openapi/api.json --output ./lib/types/barkle.ts --useOptions || true"
   },
   "dependencies": {
     "@types/node": "20.3.3",
@@ -38,5 +40,7 @@
     "autoprefixer": "^10.4.14",
     "postcss": "^8.4.24",
     "tailwindcss": "^3.3.2"
+  ,
+    "openapi-typescript": "latest"
   }
 }

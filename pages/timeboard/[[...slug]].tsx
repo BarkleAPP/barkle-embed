@@ -1,5 +1,6 @@
 import Timeline from '@/components/timeline'
 import cli from '@/lib/misskey'
+import barkleApi from '@/lib/barkle'
 import getOgs from '@/lib/og'
 import { Note } from 'misskey-js/built/entities'
 import { GetStaticPaths, GetStaticProps } from 'next'
@@ -14,7 +15,7 @@ export default function EmbeddableTimeboard({ notes, instance, userId, ogs }: {
 }) {
     return (<>
         <Head>
-            <meta name='description' content={`UID: ${userId}. Username: ${notes[0].user.name}`} />
+            <meta name='description' content={`UID: ${userId}. Username: ${notes[0]?.user?.name ?? 'unknown'}`} />
         </Head>
         <Timeline notes={notes} instance={instance} userId={userId} ogs={ogs} boardly></Timeline>
     </>)
@@ -28,8 +29,17 @@ export const getStaticPaths: GetStaticPaths = () => ({
 export const getStaticProps: GetStaticProps = async ({ params }) => {
     if (params) {
         const [userId] = params.slug as string[]
-        const notes = await cli("barkle.chat").request('users/notes', { userId })
-        const ogs = await Promise.all(notes.map(async note => getOgs(note.text)))
+        let notes: Note[] = []
+        let ogs: OgObject[][] = []
+        try {
+            notes = (await barkleApi('barkle.chat').request('users/notes', { userId })) as Note[]
+            ogs = await Promise.all(notes.map(async note => getOgs(note.text)))
+        } catch (err) {
+            console.error('Barkle API request failed:', err)
+            // fallback to empty notes so build can complete in environments where Barkle API is blocked
+            notes = []
+            ogs = []
+        }
         return { props: { notes, userId, ogs }, revalidate: 10 }
     }
     return { notFound: true }

@@ -1,6 +1,7 @@
 import Note from './note'
 import { useState } from 'react'
-import cli from '@/lib/misskey'
+// legacy misskey client is still available: import cli from '@/lib/misskey'
+import barkleApi from '@/lib/barkle'
 import { Note as NoteType } from 'misskey-js/built/entities'
 import { OgObject } from 'open-graph-scraper/dist/lib/types'
 
@@ -20,10 +21,17 @@ export default function Timeline({ notes, userId, instance, boardly = false, ogs
     const loadNotes = async () => {
         setIsLoading(true)
 
-        const loadingNotes = await cli(instance).request('users/notes', {
+        let loadingNotes: NoteType[] = []
+        try {
+            loadingNotes = (await barkleApi(instance).request('users/notes', {
             userId,
             untilId: loadedNotes[loadedNotes.length - 1].id,
-        })
+            })) as NoteType[]
+        } catch (err) {
+            console.error('Failed to load more notes from Barkle API', err)
+            setIsLoading(false)
+            return
+        }
         const loadingOgs = (await (await fetch('/api/og', {
             method: 'POST',
             headers: {
