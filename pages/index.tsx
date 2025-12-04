@@ -47,11 +47,12 @@ export default function Home() {
             <span>Quick Start</span>
           </h2>
           <div className="rounded-xl overflow-hidden border border-[#333] shadow-2xl">
+            {/* @ts-ignore */}
             <CopyBlock
               text={embedCode}
               language="html"
               showLineNumbers={false}
-              theme={dracula}
+              theme={{ ...dracula, mode: 'dark' }}
               codeBlock
             />
           </div>

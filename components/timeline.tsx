@@ -73,6 +73,7 @@ export default function Timeline({ notes, userId, instance, boardly = false, ogs
     }, [instance, userId, loadedNotes, isLoading, isFinished]);
 
     useEffect(() => {
+        const currentTarget = observerTarget.current;
         const observer = new IntersectionObserver(
             entries => {
                 if (entries[0].isIntersecting) {
@@ -82,13 +83,13 @@ export default function Timeline({ notes, userId, instance, boardly = false, ogs
             { threshold: 0.1 }
         );
 
-        if (observerTarget.current) {
-            observer.observe(observerTarget.current);
+        if (currentTarget) {
+            observer.observe(currentTarget);
         }
 
         return () => {
-            if (observerTarget.current) {
-                observer.unobserve(observerTarget.current);
+            if (currentTarget) {
+                observer.unobserve(currentTarget);
             }
         };
     }, [loadNotes]);
@@ -112,7 +113,7 @@ export default function Timeline({ notes, userId, instance, boardly = false, ogs
                 )}
                 {isFinished && loadedNotes.length > 0 && (
                     <div className="text-[#666] text-sm italic">
-                        You've reached the end of the timeline.
+                        You&apos;ve reached the end of the timeline.
                     </div>
                 )}
             </div>
