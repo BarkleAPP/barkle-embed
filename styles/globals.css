@@ -41,21 +41,21 @@ to { transform: rotate(-37.6deg) skew(-30deg); }
     box-sizing: border-box;
     content: '';
     display: inline-block;
-    height: 50%;
-    width: 50%;
+    height: 55%;
+    width: 55%;
     position: absolute;
-    top: -15%;
+    top: -20%;
     z-index: 0;
 }
 
 .avatar-cat::before {
-    left: -10%;
+    left: -15%;
     border-radius: 0 75% 75%;
     transform: rotate(37.5deg) skew(30deg);
 }
 
 .avatar-cat::after {
-    right: -10%;
+    right: -15%;
     border-radius: 75% 0 75% 75%;
     transform: rotate(-37.5deg) skew(-30deg);
 }

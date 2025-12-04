@@ -1,53 +1,91 @@
-import dynamic from 'next/dynamic'
 import { Sawarabi_Mincho } from 'next/font/google'
 import Head from 'next/head'
-import GithubCorner from 'react-github-corner'
 import Image from 'next/image'
+import { CopyBlock, dracula } from 'react-code-blocks'
 
-const ReactEmbedGist = dynamic(() => import('react-embed-gist'), {
-  ssr: false,
-})
 const mincho = Sawarabi_Mincho({ weight: '400', subsets: ['latin'] })
 
 export default function Home() {
-  const customStyle = {
-    backgroundColor: '#1f1d28', // Set the background color to #1f1d28
-    color: '#e84d83', // Default text color
-  };
-
-  const barkleTextColor = {
-    color: '#e84d83', // Text color for "Barkle"
-  };
-
-  const embeddingTextColor = {
-    color: 'white', // Text color for "Embedding solution for Barkle"
-  };
+  const embedCode = `<iframe 
+  src="https://barkle-embed.vercel.app/barks/YOUR_NOTE_ID" 
+  width="100%" 
+  height="400" 
+  frameborder="0"
+></iframe>`;
 
   return (
-    <main style={customStyle} className={`${mincho.className} overflow-y-auto p-8`}>
+    <main className={`${mincho.className} min-h-screen bg-[#191919] text-[#dadada] selection:bg-[#e84d83] selection:text-white`}>
       <Head>
-        <meta name='description' content={'Embedding solution for Barkle.'} />
+        <title>Barkle Embed</title>
+        <meta name='description' content='Embedding solution for Barkle.' />
       </Head>
 
-      <h1 className='text-5xl text-center'>
-        <div className='my-2 relative h-20'>
-          <Image priority={true} className='absolute animate-fade left-1/2 -translate-x-1/2' src={'https://barkle.chat/static-assets/dog.png'} quality={100} width={80} height={80} alt='Barkle Logo'></Image>
-        </div>
-        <div className='bg-clip-text font-extrabold text-transparent bg-gradient-to-r from-indigo-300 to-purple-400' style={barkleTextColor}>Barkle</div>
-      </h1>
-      <p className='text-center text-#e84d83 italic' style={embeddingTextColor}>Embedding solution for Barkle</p>
-      <br></br>
+      <div className="max-w-4xl mx-auto px-6 py-12">
+        {/* Hero Section */}
+        <header className="text-center mb-16">
+          <div className="relative w-24 h-24 mx-auto mb-6">
+            <Image 
+              priority 
+              src="https://barkle.chat/static-assets/dog.png" 
+              alt="Barkle Logo" 
+              fill
+              className="object-contain animate-bounce-slow"
+            />
+          </div>
+          <h1 className="text-5xl md:text-6xl font-extrabold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-[#e84d83] to-[#44a4c1]">
+            Barkle Embed
+          </h1>
+          <p className="text-xl text-[#8b8b8b] max-w-2xl mx-auto">
+            The easiest way to embed Barkle notes, timelines, and timeboards into your website.
+          </p>
+        </header>
 
-      <div className='w-2/3 mx-auto rounded-lg opacity-90 p-5 overflow-x-hidden' style={{ minWidth: 280 }}>
-        <ReactEmbedGist titleClass='hidden' loadingClass='hidden' gist='AidanTheBandit/390ed225bc649bf1b1cf8c211a73c160'></ReactEmbedGist>
-        <hr className='my-5 border-purple-400'></hr>
-        <iframe src='/barks/9358xkvosa' width={'100%'} height={260}></iframe>
-        <br></br>
-        <iframe src='/timeboard/9jnioy0lkk' width={'100%'} height={1000}/>
-        <br></br>
-        <iframe src='/timeline/9jnioy0lkk' width={'100%'} height={1000}></iframe>
+        {/* Usage Section */}
+        <section className="mb-16">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            <i className="ph-code-bold text-[#e84d83]"></i>
+            <span>Quick Start</span>
+          </h2>
+          <div className="rounded-xl overflow-hidden border border-[#333] shadow-2xl">
+            <CopyBlock
+              text={embedCode}
+              language="html"
+              showLineNumbers={false}
+              theme={dracula}
+              codeBlock
+            />
+          </div>
+        </section>
+
+        {/* Examples Section */}
+        <section className="space-y-12">
+          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            <i className="ph-eye-bold text-[#44a4c1]"></i>
+            <span>Live Examples</span>
+          </h2>
+
+          <div className="grid gap-8">
+            <div className="bg-[#212121] rounded-2xl p-6 border border-[#333]">
+              <h3 className="text-lg font-bold mb-4 text-[#dadada]">Single Note</h3>
+              <iframe src='/barks/9358xkvosa' className="w-full rounded-xl border border-[#333] bg-[#191919]" height={300}></iframe>
+            </div>
+
+            <div className="bg-[#212121] rounded-2xl p-6 border border-[#333]">
+              <h3 className="text-lg font-bold mb-4 text-[#dadada]">Timeboard</h3>
+              <iframe src='/timeboard/9jnioy0lkk' className="w-full rounded-xl border border-[#333] bg-[#191919]" height={600}></iframe>
+            </div>
+
+            <div className="bg-[#212121] rounded-2xl p-6 border border-[#333]">
+              <h3 className="text-lg font-bold mb-4 text-[#dadada]">Timeline</h3>
+              <iframe src='/timeline/9jnioy0lkk' className="w-full rounded-xl border border-[#333] bg-[#191919]" height={600}></iframe>
+            </div>
+          </div>
+        </section>
+
+        <footer className="mt-20 text-center text-[#666] text-sm">
+          <p>&copy; {new Date().getFullYear()} Barkle. All rights reserved.</p>
+        </footer>
       </div>
-      <br></br>
     </main>
   )
 }

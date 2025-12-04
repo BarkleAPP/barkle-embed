@@ -1,6 +1,5 @@
 import Note from './note'
-import { useState } from 'react'
-// legacy misskey client is still available: import cli from '@/lib/misskey'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import barkleApi from '@/lib/barkle'
 import { Note as NoteType } from 'misskey-js/built/entities'
 import { OgObject } from 'open-graph-scraper/dist/lib/types'
@@ -16,52 +15,107 @@ export default function Timeline({ notes, userId, instance, boardly = false, ogs
     const { loadedNotes, loadedOgs } = loaded
 
     const [isLoading, setIsLoading] = useState(false)
-    const [isFinished, setIsFinished] = useState(notes.length < 10 ? true : false)
+    const [isFinished, setIsFinished] = useState(notes.length < 10)
+    const observerTarget = useRef(null);
 
-    const loadNotes = async () => {
+    const loadNotes = useCallback(async () => {
+        if (isLoading || isFinished) return;
+        
         setIsLoading(true)
 
         let loadingNotes: NoteType[] = []
         try {
             loadingNotes = (await barkleApi(instance).request('users/notes', {
-            userId,
-            untilId: loadedNotes[loadedNotes.length - 1].id,
+                userId,
+                untilId: loadedNotes[loadedNotes.length - 1].id,
+                limit: 10
             })) as NoteType[]
         } catch (err) {
             console.error('Failed to load more notes from Barkle API', err)
             setIsLoading(false)
             return
         }
-        const loadingOgs = (await (await fetch('/api/og', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                texts: loadingNotes.map(note => note.text)
-            })
-        })).json()).ogs
-        setLoaded(({ loadedNotes, loadedOgs }) => ({ loadedNotes: loadedNotes.concat(loadingNotes), loadedOgs: loadedOgs.concat(loadingOgs) }))
+
+        if (loadingNotes.length === 0) {
+            setIsFinished(true);
+            setIsLoading(false);
+            return;
+        }
+
+        let loadingOgs: OgObject[][] = [];
+        try {
+            const response = await fetch('/api/og', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    texts: loadingNotes.map(note => note.text)
+                })
+            });
+            const data = await response.json();
+            loadingOgs = data.ogs;
+        } catch (e) {
+            console.error("Failed to fetch OGs", e);
+            // Fallback to empty OGs if fetch fails
+            loadingOgs = new Array(loadingNotes.length).fill([]);
+        }
+        
+        setLoaded(prev => ({ 
+            loadedNotes: prev.loadedNotes.concat(loadingNotes), 
+            loadedOgs: prev.loadedOgs.concat(loadingOgs) 
+        }))
 
         if (loadingNotes.length < 10)
             setIsFinished(true)
+        
         setIsLoading(false)
-    }
+    }, [instance, userId, loadedNotes, isLoading, isFinished]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            entries => {
+                if (entries[0].isIntersecting) {
+                    loadNotes();
+                }
+            },
+            { threshold: 0.1 }
+        );
+
+        if (observerTarget.current) {
+            observer.observe(observerTarget.current);
+        }
+
+        return () => {
+            if (observerTarget.current) {
+                observer.unobserve(observerTarget.current);
+            }
+        };
+    }, [loadNotes]);
 
     return (
         <div className={boardly ? 'grid items-center grid-cols-3 gap-5' : ''}>
             {
                 loadedNotes.map((note, index) => (
-                    <div key={note.id} className="mb-4">
+                    <div key={note.id} className="mb-4 animate-fade-in-up">
                         <Note {...note} instance={instance} ogs={loadedOgs[index]}></Note>
                     </div>
                 ))
             }
-            <button disabled={isLoading || isFinished} onClick={loadNotes} className='w-full py-3 mx-auto group relative block text-sm font-medium text-[#dadada] rounded-xl bg-[#191919] hover:bg-[#212121] transition-colors disabled:opacity-50 disabled:cursor-not-allowed'>
-                <div className='w-full h-full flex items-center justify-center'>
-                    {isLoading ? 'Loading...' : isFinished ? 'No more barks' : 'Load more'}
-                </div>
-            </button>
+            
+            <div ref={observerTarget} className="w-full py-8 flex justify-center items-center">
+                {isLoading && (
+                    <div className="flex items-center gap-2 text-[#8b8b8b]">
+                        <i className="ph-spinner-gap-bold animate-spin text-xl"></i>
+                        <span>Loading more barks...</span>
+                    </div>
+                )}
+                {isFinished && loadedNotes.length > 0 && (
+                    <div className="text-[#666] text-sm italic">
+                        You've reached the end of the timeline.
+                    </div>
+                )}
+            </div>
         </div>
     )
 }
