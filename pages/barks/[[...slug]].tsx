@@ -26,9 +26,10 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         const [noteId] = params.slug as string[]
         try {
             const note = (await barkleApi('barkle.chat').request('notes/show', { noteId }))
-            return { props: { ...note, ogs: await getOgs(note.text) }, revalidate: 10 }
+            return { props: { ...note, instance: 'barkle.chat', ogs: await getOgs(note.text) }, revalidate: 10 }
         } catch (err) {
-            console.error('Failed to fetch Barkle note for embed', err)
+            console.error('Failed to fetch Barkle note for embed:', err)
+            // Return notFound so Next.js returns 404 - the API may be blocked by Cloudflare
             return { notFound: true }
         }
     }
