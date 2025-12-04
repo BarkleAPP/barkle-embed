@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { User } from 'misskey-js/built/entities'
 
 // Extend User type to include properties that might be missing in UserLite or specific to the instance
-interface ExtendedUser extends User {
+type ExtendedUser = User & {
     isCat?: boolean;
     isLive?: boolean;
     isBot?: boolean;
@@ -15,6 +15,7 @@ interface ExtendedUser extends User {
         offsetY?: number;
     }[];
     avatarBlurhash?: string;
+    onlineStatus?: 'online' | 'active' | 'offline' | 'unknown';
 }
 
 interface AvatarProps {
@@ -79,10 +80,11 @@ export default function Avatar({
                     className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] pointer-events-none z-20 flex items-center justify-center"
                     style={getDecorationStyle(decoration)}
                 >
-                    <img 
+                    <Image 
                         src={decoration.url} 
                         alt="" 
-                        className="w-full h-full object-contain"
+                        fill
+                        className="object-contain"
                     />
                 </div>
             ))}
