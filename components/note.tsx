@@ -9,9 +9,10 @@ export interface NoteProps extends Note {
     instance: string
     ogs?: OgObject[]
     isRenote?: boolean
+    barkleFor?: string
 }
 
-export default function Note({ id, user, createdAt, text, files, cw, poll, renote, instance = 'barkle.chat', ogs = [], isRenote }: NoteProps) {
+export default function Note({ id, user, createdAt, text, files, cw, poll, renote, instance = 'barkle.chat', ogs = [], isRenote, barkleFor }: NoteProps) {
     const [show, setShow] = useState(!cw)
     const converter = new MfmConverter(instance)
     
@@ -33,7 +34,7 @@ export default function Note({ id, user, createdAt, text, files, cw, poll, renot
     }
 
     return (
-        <article className={`w-full p-6 rounded-xl bg-[#1f1f1f] text-[#dadada] font-sans`} style={{ boxShadow: isRenote ? 'none' : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}>
+        <article className={`w-full p-6 rounded-xl bg-[#191919] text-[#dadada] font-sans`} style={{ boxShadow: isRenote ? 'none' : '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' }}>
             {/* Header */}
             <header className='flex items-start mb-2'>
                 <Image width={48} height={48} src={user.avatarUrl} alt='Avatar' className='rounded-lg mr-3'></Image>
@@ -53,7 +54,7 @@ export default function Note({ id, user, createdAt, text, files, cw, poll, renot
                 {
                     cw ? (<div>
                         <span className='italic text-gray-400'>{converter.convert(cw)}</span> 
-                        <button className='text-blue-400 ml-2 text-sm hover:underline' onClick={() => setShow(show => !show)}>{show ? 'Hide' : 'Show'}</button>
+                        <button className='text-[#44a4c1] ml-2 text-sm hover:underline' onClick={() => setShow(show => !show)}>{show ? 'Hide' : 'Show'}</button>
                     </div>) : <></>
                 }
                 {
@@ -76,19 +77,21 @@ export default function Note({ id, user, createdAt, text, files, cw, poll, renot
             )}
 
             {/* Footer Info */}
-            <div className='mt-2 mb-3 text-xs font-bold text-[#666]'>
-                Barkle for iOS
-            </div>
+            {barkleFor && (
+                <div className='mt-2 mb-3 text-xs font-bold text-[#666]'>
+                    {barkleFor}
+                </div>
+            )}
 
             {/* Reactions */}
              <div className='flex gap-2 mb-3'>
-                <div className='flex items-center bg-[#f06292] text-white px-2 py-1 rounded text-sm font-bold'>
+                <div className='flex items-center bg-[#e84d83] text-white px-2 py-1 rounded text-sm font-bold'>
                     <i className="ph-star-bold mr-1"></i> 1
                 </div>
             </div>
 
             {/* Action Buttons */}
-            <footer className='flex items-center justify-between text-[#8b8b8b] mt-2 border-t border-[#333] pt-3'>
+            <footer className='flex items-center justify-between text-[#8b8b8b] mt-2 border-t border-[rgba(255,255,255,0.1)] pt-3'>
                 <button className='hover:text-white transition-colors flex items-center gap-1'>
                     <i className="ph-arrow-bend-up-left-bold text-xl"></i>
                 </button>
@@ -97,7 +100,7 @@ export default function Note({ id, user, createdAt, text, files, cw, poll, renot
                     <span className='text-sm'>1</span>
                 </button>
                 <button className='hover:text-white transition-colors flex items-center gap-1'>
-                    <i className="ph-minus-bold text-xl text-[#f06292]"></i>
+                    <i className="ph-minus-bold text-xl text-[#e84d83]"></i>
                 </button>
                  <button className='hover:text-white transition-colors flex items-center gap-1'>
                     <i className="ph-dots-three-outline-bold text-xl"></i>
@@ -108,7 +111,7 @@ export default function Note({ id, user, createdAt, text, files, cw, poll, renot
 }
 
 const Renote = ({ renote }: { renote?: Note }) => renote ? (<>
-    <div className="border border-[#333] rounded-lg p-4 mt-2">
+    <div className="border border-[rgba(255,255,255,0.1)] rounded-lg p-4 mt-2">
         <Note {...renote} ogs={[]} instance='barkle.chat' isRenote></Note>
     </div>
 </>) : <></>
@@ -119,7 +122,7 @@ const Cards = ({ ogs }: { ogs: OgObject[] }) => {
             ogs.map(({ ogImage, ogTitle, requestUrl, ogDescription }) => (
                 (
                     <a key={requestUrl} href={requestUrl} target='_blank' rel='noreferrer' className="block mt-2">
-                        <div className='flex h-24 bg-[#2a2a2a] rounded-lg overflow-hidden hover:bg-[#333] transition-colors'>
+                        <div className='flex h-24 bg-[#212121] rounded-lg overflow-hidden hover:bg-[#333] transition-colors'>
                             <div className='relative w-24 h-24 shrink-0'>
                                 <Image quality={100} src={(ogImage as ImageObject[])[0].url} className='object-cover' fill alt={ogTitle as string}></Image>
                             </div>
@@ -146,7 +149,7 @@ const Images = ({ imgs }: { imgs: DriveFile[] }) => {
             {
                 isMounted ? imgs.map(({ id, thumbnailUrl, url, name }, index) => (
                     <ProgressiveImage key={id} preview={thumbnailUrl} src={url} render={(src, style) => (
-                        <div className='overflow-hidden aspect-video rounded-lg relative bg-[#2a2a2a]'>
+                        <div className='overflow-hidden aspect-video rounded-lg relative bg-[#212121]'>
                             <Image fill src={src} alt={name} style={{ ...style, objectFit: 'cover', opacity: opacities[index], filter: `blur(${Math.floor((1 - opacities[index]) * 5)}px)` }} />
                             <div className='absolute top-2 right-2 bg-[#333] p-1 rounded text-white opacity-70 hover:opacity-100 cursor-pointer'>
                                 <i className="ph-eye-slash"></i>
@@ -191,7 +194,7 @@ const Enquette = ({ poll }: {
             poll.choices.map(({ text, votes }) => (
                 <div
                     key={text}
-                    className='w-full border border-[#333] my-1 rounded overflow-hidden relative bg-[#2a2a2a]'
+                    className='w-full border border-[rgba(255,255,255,0.1)] my-1 rounded overflow-hidden relative bg-[#212121]'
                 >
                     <div style={{ width: `${votes / allVotes * 100}%` }} className='absolute top-0 left-0 h-full bg-[#333] opacity-50'></div>
                     <div className='relative p-2 flex justify-between items-center text-sm text-[#dadada]'>

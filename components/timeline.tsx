@@ -57,7 +57,7 @@ export default function Timeline({ notes, userId, instance, boardly = false, ogs
                     </div>
                 ))
             }
-            <button disabled={isLoading || isFinished} onClick={loadNotes} className='w-full py-3 mx-auto group relative block text-sm font-medium text-[#dadada] rounded bg-[#1f1f1f] hover:bg-[#333] transition-colors'>
+            <button disabled={isLoading || isFinished} onClick={loadNotes} className='w-full py-3 mx-auto group relative block text-sm font-medium text-[#dadada] rounded bg-[#191919] hover:bg-[#212121] transition-colors'>
                 <div className='w-full h-full flex items-center justify-center'>
                     {isLoading ? 'Loading...' : isFinished ? 'No more barks' : 'Load more'}
                 </div>
